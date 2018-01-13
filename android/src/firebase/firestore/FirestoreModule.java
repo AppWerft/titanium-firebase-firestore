@@ -6,7 +6,7 @@
  * Please see the LICENSE included with this distribution for details.
  *
  */
-package firebase.firestre;
+package firebase.firestore;
 
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
@@ -16,7 +16,7 @@ import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.common.TiConfig;
 
 
-@Kroll.module(name="Firestore", id="firebase.firestre")
+@Kroll.module(name="Firestore", id="firebase.firestore")
 public class FirestoreModule extends KrollModule
 {
 

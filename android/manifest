@@ -12,7 +12,7 @@ copyright: Copyright (c) 2018 by Your Company
 
 # these should not be edited
 name: firestore
-moduleid: firebase.firestre
+moduleid: firebase.firestore
 guid: bf346549-abb6-4f8c-ac97-03db06c0363e
 platform: android
 minsdk: 7.0.1.GA
