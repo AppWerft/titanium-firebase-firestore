@@ -8,58 +8,140 @@
  */
 package firebase.firestore;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
-
-import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.kroll.common.Log;
-import org.appcelerator.kroll.common.TiConfig;
+import org.appcelerator.titanium.TiApplication;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import android.support.annotation.NonNull;
 
-@Kroll.module(name="Firestore", id="firebase.firestore")
-public class FirestoreModule extends KrollModule
-{
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+@Kroll.module(name = "Firestore", id = "firebase.firestore")
+public class FirestoreModule extends KrollModule {
 
 	// Standard Debugging variables
 	private static final String LCAT = "FirestoreModule";
-	private static final boolean DBG = TiConfig.LOGD;
-
+	FirebaseFirestore db;
+	JSONObject typeOfCollections = new JSONObject();
 	// You can define constants with @Kroll.constant, for example:
-	// @Kroll.constant public static final String EXTERNAL_NAME = value;
+	@Kroll.constant
+	public static final int TYPE_BOOLEAN = 0;
+	@Kroll.constant
+	public static final int TYPE_STRING = 1;
+	@Kroll.constant
+	public static final int TYPE_INT = 2;
+	@Kroll.constant
+	public static final int TYPE_FLOAT = 3;
+	@Kroll.constant
+	public static final int TYPE_DOUBLE = 4;
+	@Kroll.constant
+	public static final int TYPE_LONG = 5;
 
-	public FirestoreModule()
-	{
+	public FirestoreModule() {
 		super();
+		db = FirebaseFirestore.getInstance();
 	}
 
 	@Kroll.onAppCreate
-	public static void onAppCreate(TiApplication app)
-	{
+	public static void onAppCreate(TiApplication app) {
 		Log.d(LCAT, "inside onAppCreate");
-		// put module init code that needs to run when the application is created
+		// put module init code that needs to run when the application is
+		// created
 	}
 
 	// Methods
 	@Kroll.method
-	public String example()
-	{
-		Log.d(LCAT, "example called");
-		return "hello world";
+	public void defineCollection(String collection, KrollDict types) {
+		try {
+			JSONObject collectiontypes = new JSONObject();
+			for (String key : types.keySet()) {
+				switch (types.getInt(key)) {
+				case TYPE_BOOLEAN:
+					collectiontypes.put(key, TYPE_BOOLEAN);
+					break;
+				case TYPE_STRING:
+					collectiontypes.put(key, TYPE_STRING);
+					break;
+				case TYPE_INT:
+					collectiontypes.put(key, TYPE_INT);
+					break;
+				case TYPE_FLOAT:
+					collectiontypes.put(key, TYPE_FLOAT);
+					break;
+				case TYPE_DOUBLE:
+				collectiontypes.put(key, TYPE_DOUBLE);
+				break;
+				case TYPE_LONG:
+				collectiontypes.put(key, TYPE_LONG);
+				break;
+			
+				}
+			}
+			typeOfCollections.put(collection, collectiontypes);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
-	// Properties
-	@Kroll.getProperty
-	public String getExampleProp()
-	{
-		Log.d(LCAT, "get example property");
-		return "hello world";
+	@Kroll.method
+	public void add(String collection, KrollDict data, KrollFunction callback) {
+		db.collection(collection)
+				.add(data)
+				.addOnSuccessListener(
+						new OnSuccessListener<DocumentReference>() {
+							@Override
+							public void onSuccess(
+									DocumentReference documentReference) {
+
+							}
+						}).addOnFailureListener(new OnFailureListener() {
+					@Override
+					public void onFailure(@NonNull Exception e) {
+
+					}
+				});
 	}
 
+	KrollFunction onCallback;
 
-	@Kroll.setProperty
-	public void setExampleProp(String value) {
-		Log.d(LCAT, "set example property: " + value);
+	@Kroll.method
+	public void get(String collection, Object callback) {
+		if (callback != null) {
+			onCallback = (KrollFunction) callback;
+		}
+		db.collection("users").get()
+				.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+					@Override
+					public void onComplete(@NonNull Task<QuerySnapshot> task) {
+						List<Object> list = new ArrayList();
+						KrollDict dict = new KrollDict();
+						if (task.isSuccessful()) {
+							for (DocumentSnapshot document : task.getResult()) {
+								list.add(document);
+							}
+							dict.put("collection", list.toArray());
+
+						} else {
+						}
+						onCallback.call(getKrollObject(), dict);
+					}
+				});
+
 	}
-
 }
-

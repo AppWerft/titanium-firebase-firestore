@@ -12,5 +12,9 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/Users/fuerst/Documents/TiFirebase/firebase-firestore-11.8.0.jar"/>
+	<classpathentry kind="lib" path="/Users/fuerst/Documents/TiFirebase/titanium-firebase-config/android/lib/playservices-tasks_11.0.4.jar"/>
+	<classpathentry kind="lib" path="/Users/fuerst/Documents/TiFirebase/titanium-firebase-config/android/lib/playservices-base_11.0.4.jar"/>
+	<classpathentry kind="lib" path="/Users/fuerst/Documents/TiFirebase/titanium-firebase-config/android/lib/plyservicesa-basement_11.0.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
