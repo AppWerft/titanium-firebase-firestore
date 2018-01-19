@@ -14,7 +14,7 @@ var animals = FireStore.createCollection("animals",{
 			name : FireStore.TYPE.STRING,
 			color : FireStore.TYPE.STRING,
 			age : FirerStore.TYPE_INT,
-			length : FireStore.FLOAT
+			length : FireStore.TYPE_FLOAT
 });
 
 animals.add({
@@ -22,6 +22,9 @@ animals.add({
 		color: "black",
 		age : 7,
 		length : 123.4
+	},function(e){
+		console.log(e);
 });
 
+animals.read()
 ```

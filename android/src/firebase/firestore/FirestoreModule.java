@@ -36,9 +36,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 public class FirestoreModule extends KrollModule {
 
 	// Standard Debugging variables
-	private static final String LCAT = "FirestoreModule";
-	FirebaseFirestore db;
-	JSONObject typeOfCollections = new JSONObject();
+	public static final String LCAT = "FirestoreModule";
+	public static FirebaseFirestore db;
+	
 	// You can define constants with @Kroll.constant, for example:
 	@Kroll.constant
 	public static final int TYPE_BOOLEAN = 0;
@@ -57,7 +57,11 @@ public class FirestoreModule extends KrollModule {
 		super();
 		db = FirebaseFirestore.getInstance();
 	}
-
+    
+	public static FirebaseFirestore getDb() {
+		return db;
+	}
+    
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app) {
 		Log.d(LCAT, "inside onAppCreate");
@@ -65,83 +69,7 @@ public class FirestoreModule extends KrollModule {
 		// created
 	}
 
-	// Methods
-	@Kroll.method
-	public void defineCollection(String collection, KrollDict types) {
-		try {
-			JSONObject collectiontypes = new JSONObject();
-			for (String key : types.keySet()) {
-				switch (types.getInt(key)) {
-				case TYPE_BOOLEAN:
-					collectiontypes.put(key, TYPE_BOOLEAN);
-					break;
-				case TYPE_STRING:
-					collectiontypes.put(key, TYPE_STRING);
-					break;
-				case TYPE_INT:
-					collectiontypes.put(key, TYPE_INT);
-					break;
-				case TYPE_FLOAT:
-					collectiontypes.put(key, TYPE_FLOAT);
-					break;
-				case TYPE_DOUBLE:
-				collectiontypes.put(key, TYPE_DOUBLE);
-				break;
-				case TYPE_LONG:
-				collectiontypes.put(key, TYPE_LONG);
-				break;
-			
-				}
-			}
-			typeOfCollections.put(collection, collectiontypes);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-	}
+	
 
-	@Kroll.method
-	public void add(String collection, KrollDict data, KrollFunction callback) {
-		db.collection(collection)
-				.add(data)
-				.addOnSuccessListener(
-						new OnSuccessListener<DocumentReference>() {
-							@Override
-							public void onSuccess(
-									DocumentReference documentReference) {
-
-							}
-						}).addOnFailureListener(new OnFailureListener() {
-					@Override
-					public void onFailure(@NonNull Exception e) {
-
-					}
-				});
-	}
-
-	KrollFunction onCallback;
-
-	@Kroll.method
-	public void get(String collection, Object callback) {
-		if (callback != null) {
-			onCallback = (KrollFunction) callback;
-		}
-		db.collection("users").get()
-				.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-					@Override
-					public void onComplete(@NonNull Task<QuerySnapshot> task) {
-						List<Object> list = new ArrayList();
-						KrollDict dict = new KrollDict();
-						if (task.isSuccessful()) {
-							for (DocumentSnapshot document : task.getResult()) {
-								list.add(document);
-							}
-							dict.put("collection", list.toArray());
-
-						} else {
-						}
-						onCallback.call(getKrollObject(), dict);
-					}
-				});
-
-	}
+	
 }
